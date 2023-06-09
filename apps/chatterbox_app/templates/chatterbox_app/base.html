@@ -1,0 +1,31 @@
+<!-- chatterbox_app/templates/chatterbox_app/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatterBox</title>
+</head>
+
+<body>
+    <header>
+        <h1>ChatterBox</h1>
+        <nav>
+            <a href="{% url 'chatterbox_app:home' %}">Home</a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'chatterbox_app:my_account' %}">My Account</a>
+            <a href="{% url 'account_logout' %}">Logout</a>
+            {% else %}
+            <a href="{% url 'account_login' %}">Login</a>
+            <a href="{% url 'account_signup' %}">Sign Up</a>
+            {% endif %}
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+</body>
+
+</html>

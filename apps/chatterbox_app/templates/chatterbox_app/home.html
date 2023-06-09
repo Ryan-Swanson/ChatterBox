@@ -1,0 +1,11 @@
+<!-- chatterbox_app/templates/chatterbox_app/home.html -->
+{% extends 'chatterbox_app/base.html' %}
+
+{% block content %}
+    <h2>Welcome to ChatterBox!</h2>
+    {% if user.is_authenticated %}
+        <p>Hello, {{ user.email }}!</p>
+    {% else %}
+        <p>Please log in or sign up to join the conversation.</p>
+    {% endif %}
+{% endblock %}

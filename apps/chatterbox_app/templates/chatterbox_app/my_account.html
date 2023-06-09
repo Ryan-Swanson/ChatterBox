@@ -1,0 +1,21 @@
+<!-- chatterbox_app/templates/chatterbox_app/my_account.html -->
+
+{% extends "chatterbox_app/base.html" %}
+
+{% block content %}
+<h2>My Account</h2>
+
+<h3>User Information</h3>
+<form method="post">
+    {% csrf_token %}
+    {{ user_form.as_p }}
+    <button type="submit">Update User</button>
+</form>
+
+<h3>Profile Information</h3>
+<form method="post">
+    {% csrf_token %}
+    {{ profile_form.as_p }}
+    <button type="submit">Update Profile</button>
+</form>
+{% endblock %}
