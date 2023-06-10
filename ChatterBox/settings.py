@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -155,6 +154,3 @@ ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_USERNAME_REQUIRED = True  # update this line to True
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
 LOGIN_REDIRECT_URL = 'chatterbox_app:home'
-
-# Django-crispy-forms settings
-CRISPY_TEMPLATE_PACK = 'tailwindcss'

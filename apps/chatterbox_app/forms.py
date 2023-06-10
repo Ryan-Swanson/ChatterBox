@@ -18,7 +18,7 @@ class CustomSignupForm(SignupForm):
         user.last_name = self.cleaned_data['last_name']
         user.username = self.cleaned_data['username']
         user.save()
-        
+
         # Manually create the profile if it doesn't exist.
         Profile.objects.get_or_create(user=user, defaults={'phone_number': self.cleaned_data['phone_number']})
 
@@ -29,7 +29,9 @@ class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email', 'username']
-
+        widgets = {
+            'username': forms.TextInput(attrs={'maxlength': 100}),
+        }
 
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:

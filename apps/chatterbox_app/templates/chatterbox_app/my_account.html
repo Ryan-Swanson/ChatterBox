@@ -3,19 +3,29 @@
 {% extends "chatterbox_app/base.html" %}
 
 {% block content %}
-<h2>My Account</h2>
+  <h2>My Account</h2>
 
-<h3>User Information</h3>
-<form method="post">
+  <form method="post">
     {% csrf_token %}
-    {{ user_form.as_p }}
-    <button type="submit">Update User</button>
-</form>
-
-<h3>Profile Information</h3>
-<form method="post">
-    {% csrf_token %}
-    {{ profile_form.as_p }}
-    <button type="submit">Update Profile</button>
-</form>
+    {% for field in user_form %}
+      {% if field.name == 'username' %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+        </div>
+      {% else %}
+        <div class="form-group">
+          {{ field.label_tag }}
+          {{ field }}
+        </div>
+      {% endif %}
+    {% endfor %}
+    {% for field in profile_form %}
+      <div class="form-group">
+        {{ field.label_tag }}
+        {{ field }}
+      </div>
+    {% endfor %}
+    <button type="submit">Update</button>
+  </form>
 {% endblock %}
