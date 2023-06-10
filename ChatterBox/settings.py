@@ -143,11 +143,9 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
-    'apps.chatterbox_app.adapters.UsernameAuthenticationBackend',
 )
 
-ACCOUNT_ADAPTER = 'apps.chatterbox_app.adapters.CustomAccountAdapter'
-ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+
 ACCOUNT_FORMS = {'signup': 'apps.chatterbox_app.forms.CustomSignupForm'}  # add this line
 
 # Django-allauth settings
