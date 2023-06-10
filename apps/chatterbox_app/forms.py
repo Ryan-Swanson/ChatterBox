@@ -3,7 +3,7 @@
 from allauth.account.forms import SignupForm
 from django import forms
 from django.contrib.auth.models import User
-from .models import Profile
+from .models import Profile, Contact, Note
 
 
 class CustomSignupForm(SignupForm):
@@ -37,3 +37,20 @@ class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['phone_number', 'address', 'notes', 'bio', 'location', 'birthdate']
+
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = Contact
+        fields = ['first_name', 'last_name', 'email', 'phone_number', 'notes']
+
+
+class EmailForm(forms.Form):
+    subject = forms.CharField(max_length=200)
+    message = forms.CharField(widget=forms.Textarea)
+
+
+class NoteForm(forms.ModelForm):
+    class Meta:
+        model = Note
+        fields = ['note_content', 'contact']  # 'content' changed to 'note_content'
+        widgets = {'contact': forms.HiddenInput()}  # make 'contact' field hidden

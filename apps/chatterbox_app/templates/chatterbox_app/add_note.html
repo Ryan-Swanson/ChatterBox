@@ -1,0 +1,10 @@
+{% extends "chatterbox_app/base.html" %}
+
+{% block content %}
+  <h2>Add a note</h2>
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Add note</button>
+  </form>
+{% endblock %}

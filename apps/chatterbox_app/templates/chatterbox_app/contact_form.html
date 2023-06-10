@@ -1,0 +1,11 @@
+<!-- chatterbox_app/templates/chatterbox_app/contact_form.html -->
+{% extends "chatterbox_app/base.html" %}
+
+{% block content %}
+    <h2>Add/Edit Contact</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+{% endblock %}

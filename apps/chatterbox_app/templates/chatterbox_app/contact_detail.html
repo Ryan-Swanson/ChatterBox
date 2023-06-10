@@ -1,0 +1,26 @@
+<!-- templates/chatterbox_app/contact_detail.html -->
+
+{% extends "chatterbox_app/base.html" %}
+
+{% block content %}
+  <h2>Contact: {{ object.first_name }} {{ object.last_name }}</h2>
+  <p>Email: {{ object.email }}</p>
+  <p>Phone: {{ object.phone }}</p>
+
+  <h3>Notes:</h3>
+  <ul>
+    {% for note in notes %}
+    <li>
+      <p>Date: {{ note.date }} | Created: {{ note.created_at }} | Last updated: {{ note.updated_at }}</p>
+      <p>Note: {{ note.note_content }}</p>
+      <a href="{% url 'chatterbox_app:note_edit' contact_pk=object.pk pk=note.pk %}">Edit</a>
+      <a href="{% url 'chatterbox_app:note_delete' contact_pk=object.pk pk=note.pk %}">Delete</a>
+    </li>
+    {% empty %}
+    <li>No notes yet.</li>
+    {% endfor %}
+  </ul>
+  <a href="{% url 'chatterbox_app:contact_delete' pk=object.pk %}">Delete Contact</a>
+  <a href="{% url 'chatterbox_app:add_note' pk=object.pk %}">Add Note</a>
+
+{% endblock %}

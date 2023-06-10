@@ -1,0 +1,11 @@
+<!-- chatterbox_app/templates/chatterbox_app/email_form.html -->
+{% extends "chatterbox_app/base.html" %}
+
+{% block content %}
+    <h2>Send Email to {{ contact.first_name }} {{ contact.last_name }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Send</button>
+    </form>
+{% endblock %}

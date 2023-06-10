@@ -1,0 +1,32 @@
+<!-- templates/chatterbox_app/contact_list.html -->
+
+{% extends "chatterbox_app/base.html" %}
+
+{% block content %}
+<h2>Contact List</h2>
+<a href="{% url 'chatterbox_app:contact_create' %}">Add Contact</a>  <!-- Add this line -->
+{% if contacts %}
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Actions</th>
+  </tr>
+  {% for contact in contacts %}
+  <tr>
+    <td>{{ contact.first_name }} {{ contact.last_name }}</td>
+    <td>{{ contact.email }}</td>
+    <td>
+      <a href="{% url 'chatterbox_app:contact_detail' pk=contact.pk %}">View</a> |
+      <a href="{% url 'chatterbox_app:contact_update' pk=contact.pk %}">Edit</a> |
+      <a href="{% url 'chatterbox_app:add_note' pk=contact.pk %}">Add Note</a> |
+      <a href="{% url 'chatterbox_app:contact_delete' pk=contact.pk %}">Delete</a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>No contacts yet.</p>
+{% endif %}
+<a href="{% url 'chatterbox_app:contact_create' %}">Add Contact</a>  <!-- Or add it here -->
+{% endblock %}

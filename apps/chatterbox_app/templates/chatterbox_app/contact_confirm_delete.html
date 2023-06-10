@@ -1,0 +1,11 @@
+<!-- templates/chatterbox_app/contact_confirm_delete.html -->
+{% extends "chatterbox_app/base.html" %}
+
+{% block content %}
+  <h2>Delete Contact</h2>
+  <p>Are you sure you want to delete the contact "{{ contact.first_name }} {{ contact.last_name }}"?</p>
+  <form method="POST">
+    {% csrf_token %}
+    <button type="submit">Yes, delete</button>
+  </form>
+{% endblock %}
