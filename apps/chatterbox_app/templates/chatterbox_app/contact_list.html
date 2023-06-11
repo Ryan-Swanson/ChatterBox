@@ -20,6 +20,7 @@
       <a href="{% url 'chatterbox_app:contact_detail' pk=contact.pk %}">View</a> |
       <a href="{% url 'chatterbox_app:contact_update' pk=contact.pk %}">Edit</a> |
       <a href="{% url 'chatterbox_app:add_note' pk=contact.pk %}">Add Note</a> |
+      <a href="{% url 'chatterbox_app:send_email' contact.id %}">Send Email</a> |
       <a href="{% url 'chatterbox_app:contact_delete' pk=contact.pk %}">Delete</a>
     </td>
   </tr>
