@@ -34,9 +34,11 @@ class UserUpdateForm(forms.ModelForm):
         }
 
 class ProfileUpdateForm(forms.ModelForm):
+    smtp_password = forms.CharField(widget=forms.PasswordInput, required=False)
+
     class Meta:
         model = Profile
-        fields = ['phone_number', 'address', 'notes', 'bio', 'location', 'birthdate']
+        fields = ['phone_number', 'address', 'notes', 'bio', 'location', 'birthdate', 'smtp_email', 'smtp_password']
 
 class ContactForm(forms.ModelForm):
     class Meta:

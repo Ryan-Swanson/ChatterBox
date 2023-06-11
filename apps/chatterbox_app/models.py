@@ -18,6 +18,10 @@ class Profile(models.Model):
     location = models.CharField(max_length=30, blank=True)
     birthdate = models.DateField(null=True, blank=True)
 
+    # Personal email
+    smtp_email = models.EmailField(blank=True, null=True)
+    smtp_password = models.CharField(max_length=128, blank=True, null=True)
+
     def __str__(self):
         return self.user.username if self.user else 'No User'
 

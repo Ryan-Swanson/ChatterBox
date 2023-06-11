@@ -4,9 +4,13 @@ from django.views.generic.detail import DetailView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
+
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 from .forms import UserUpdateForm, ProfileUpdateForm, ContactForm, EmailForm, NoteForm
 from .models import Contact, Note
-
 
 def home(request):
     return render(request, 'chatterbox_app/home.html')
@@ -22,7 +26,12 @@ def my_account(request):
 
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
-            profile_form.save()
+
+            smtp_password = profile_form.cleaned_data.get('smtp_password')
+            if smtp_password:  # Check if the user provided a new password
+                profile.smtp_password = smtp_password
+
+            profile.save()
     else:
         user_form = UserUpdateForm(instance=user)
         profile_form = ProfileUpdateForm(instance=profile)
@@ -86,7 +95,27 @@ def send_email(request, contact_id):
         if form.is_valid():
             subject = form.cleaned_data['subject']
             message = form.cleaned_data['message']
-            send_mail(subject, message, request.user.email, [contact.email]) 
+            # Use the SMTP credentials from user's profile instead
+            smtp_email = request.user.profile.smtp_email
+            smtp_password = request.user.profile.smtp_password  # You will need to decrypt this
+
+            # Create message
+            msg = MIMEMultipart()
+            msg['From'] = smtp_email
+            msg['To'] = contact.email
+            msg['Subject'] = subject
+            msg.attach(MIMEText(message, 'plain'))
+
+            # Setup server
+            server = smtplib.SMTP('smtp.gmail.com', 587)  # assuming gmail
+            server.starttls()
+            server.login(smtp_email, smtp_password)
+
+            # Send the email
+            text = msg.as_string()
+            server.sendmail(smtp_email, contact.email, text)
+            server.quit()
+
             return redirect('chatterbox_app:contact_list')
     else:
         form = EmailForm()
@@ -96,6 +125,7 @@ def send_email(request, contact_id):
         'contact': contact,
     }
     return render(request, 'chatterbox_app/email_form.html', context)
+
 
 
 @login_required
