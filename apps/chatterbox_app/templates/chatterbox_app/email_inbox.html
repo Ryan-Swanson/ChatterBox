@@ -1,0 +1,21 @@
+<!-- templates/chatterbox_app/email_inbox.html -->
+
+{% extends "chatterbox_app/base.html" %}
+
+{% block content %}
+    <h2>Email Inbox</h2>
+    {% if emails %}
+        <ul>
+            {% for email in emails %}
+                <li>
+                    <strong>From:</strong> {{ email.From }}<br>
+                    <strong>Subject:</strong> {{ email.Subject }}<br>
+                    <strong>Date:</strong> {{ email.Date }}<br>
+                    <hr>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No emails found.</p>
+    {% endif %}
+{% endblock %}

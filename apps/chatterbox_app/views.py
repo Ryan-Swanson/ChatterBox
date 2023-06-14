@@ -4,13 +4,17 @@ from django.views.generic.detail import DetailView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
-
 import smtplib
+import imaplib
+from email import message_from_bytes
+from smtplib import SMTPAuthenticationError
+from django.contrib import messages
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from .forms import UserUpdateForm, ProfileUpdateForm, ContactForm, EmailForm, NoteForm
 from .models import Contact, Note
+
 
 def home(request):
     return render(request, 'chatterbox_app/home.html')
@@ -26,6 +30,7 @@ def my_account(request):
 
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
+            profile_form.save()
 
             smtp_password = profile_form.cleaned_data.get('smtp_password')
             if smtp_password:  # Check if the user provided a new password
@@ -95,27 +100,26 @@ def send_email(request, contact_id):
         if form.is_valid():
             subject = form.cleaned_data['subject']
             message = form.cleaned_data['message']
-            # Use the SMTP credentials from user's profile instead
             smtp_email = request.user.profile.smtp_email
-            smtp_password = request.user.profile.smtp_password  # You will need to decrypt this
+            smtp_password = request.user.profile.smtp_password
 
-            # Create message
             msg = MIMEMultipart()
             msg['From'] = smtp_email
             msg['To'] = contact.email
             msg['Subject'] = subject
             msg.attach(MIMEText(message, 'plain'))
 
-            # Setup server
-            server = smtplib.SMTP('smtp.gmail.com', 587)  # assuming gmail
+            server = smtplib.SMTP('smtp.gmail.com', 587)
             server.starttls()
-            server.login(smtp_email, smtp_password)
+            try:
+                server.login(smtp_email, smtp_password)
+            except SMTPAuthenticationError:
+                messages.error(request, 'SMTP Authentication failed. Please check your SMTP username and password.')
+                return redirect('chatterbox_app:my_account')  # Redirect them back to the account page to fix their SMTP settings.
 
-            # Send the email
             text = msg.as_string()
             server.sendmail(smtp_email, contact.email, text)
             server.quit()
-
             return redirect('chatterbox_app:contact_list')
     else:
         form = EmailForm()
@@ -125,8 +129,6 @@ def send_email(request, contact_id):
         'contact': contact,
     }
     return render(request, 'chatterbox_app/email_form.html', context)
-
-
 
 @login_required
 def note_create(request, contact_id):
@@ -190,3 +192,49 @@ def note_delete(request, contact_pk, pk):
         return redirect('chatterbox_app:contact_detail', pk=contact_pk)
 
     return render(request, 'chatterbox_app/note_confirm_delete.html', {'note': note})
+
+@login_required
+def email_inbox(request):
+    user = request.user
+    smtp_email = user.profile.smtp_email
+    smtp_password = user.profile.smtp_password
+
+    try:
+        # Connect to the SMTP server
+        smtp_server = smtplib.SMTP('smtp.gmail.com', 587)
+        smtp_server.starttls()
+        smtp_server.login(smtp_email, smtp_password)
+
+        # Connect to the IMAP server
+        imap_server = imaplib.IMAP4_SSL('imap.gmail.com')
+        imap_server.login(smtp_email, smtp_password)
+        imap_server.select('INBOX')
+
+        # Retrieve the email UIDs
+        _, uids = imap_server.search(None, 'ALL')
+        email_ids = uids[0].split()
+
+        # Limit the number of emails to 20
+        email_ids = email_ids[-20:]
+
+        emails = []
+        for email_id in email_ids:
+            _, data = imap_server.fetch(email_id, '(RFC822)')
+            raw_email = data[0][1]
+            email = message_from_bytes(raw_email)
+            emails.append(email)
+
+        # Sort emails by timestamp in descending order
+        emails.sort(key=lambda e: e['Date'], reverse=True)
+
+        imap_server.close()
+        imap_server.logout()
+
+        smtp_server.quit()
+    except (smtplib.SMTPAuthenticationError, imaplib.IMAP4.error):
+        messages.error(request, 'Failed to retrieve emails. Please check your SMTP username and password.')
+
+    context = {
+        'emails': emails
+    }
+    return render(request, 'chatterbox_app/email_inbox.html', context)
