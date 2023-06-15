@@ -4,6 +4,9 @@ from django.views.generic.detail import DetailView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
+from django.urls import reverse
+from django.core.cache import cache
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import smtplib
 import imaplib
 from email import message_from_bytes
@@ -199,6 +202,65 @@ def email_inbox(request):
     smtp_email = user.profile.smtp_email
     smtp_password = user.profile.smtp_password
 
+    # Check if the emails are already cached
+    cache_key = f'email_inbox:{user.id}'
+    emails = cache.get(cache_key)
+
+    if emails is None:
+        try:
+            # Connect to the SMTP server
+            smtp_server = smtplib.SMTP('smtp.gmail.com', 587)
+            smtp_server.starttls()
+            smtp_server.login(smtp_email, smtp_password)
+
+            # Connect to the IMAP server
+            imap_server = imaplib.IMAP4_SSL('imap.gmail.com')
+            imap_server.login(smtp_email, smtp_password)
+            imap_server.select('INBOX')
+
+            # Retrieve the email UIDs
+            _, uids = imap_server.search(None, 'ALL')
+            email_ids = uids[0].split()
+
+            # Limit the initial number of emails
+            email_ids = email_ids[-20:]
+
+            emails = []
+            for email_id in email_ids:
+                _, data = imap_server.fetch(email_id, '(RFC822)')
+                raw_email = data[0][1]
+                email = message_from_bytes(raw_email)
+                emails.append(email)
+
+            # Sort emails by timestamp in descending order
+            emails.sort(key=lambda e: e['Date'], reverse=True)
+
+            imap_server.close()
+            imap_server.logout()
+
+            smtp_server.quit()
+        except (smtplib.SMTPAuthenticationError, imaplib.IMAP4.error):
+            messages.error(request, 'Failed to retrieve emails. Please check your SMTP username and password.')
+
+        # Cache the emails for 5 minutes
+        cache.set(cache_key, emails, 300)
+
+    # Paginate the emails
+    paginator = Paginator(emails, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj
+    }
+    return render(request, 'chatterbox_app/email_inbox.html', context)
+
+@login_required
+def load_emails(request):
+    user = request.user
+    smtp_email = user.profile.smtp_email
+    smtp_password = user.profile.smtp_password
+
     try:
         # Connect to the SMTP server
         smtp_server = smtplib.SMTP('smtp.gmail.com', 587)
@@ -213,12 +275,23 @@ def email_inbox(request):
         # Retrieve the email UIDs
         _, uids = imap_server.search(None, 'ALL')
         email_ids = uids[0].split()
+        total_num_emails = len(email_ids)
 
-        # Limit the number of emails to 20
-        email_ids = email_ids[-20:]
+        # Get the number of emails already loaded
+        cache_key = f'email_inbox:{user.id}'
+        existing_emails = cache.get(cache_key, [])
+        num_existing_emails = len(existing_emails)
+        print(f'\n\n\n\n{num_existing_emails=}')
 
+        # Limit the number of emails to load
+        num_emails_to_load = 20
+        start_index = total_num_emails - num_existing_emails- num_emails_to_load
+        end_index = start_index + num_emails_to_load
+
+        # Retrieve the new emails
+        email_ids_to_load = email_ids[start_index:end_index]
         emails = []
-        for email_id in email_ids:
+        for email_id in email_ids_to_load:
             _, data = imap_server.fetch(email_id, '(RFC822)')
             raw_email = data[0][1]
             email = message_from_bytes(raw_email)
@@ -234,7 +307,11 @@ def email_inbox(request):
     except (smtplib.SMTPAuthenticationError, imaplib.IMAP4.error):
         messages.error(request, 'Failed to retrieve emails. Please check your SMTP username and password.')
 
-    context = {
-        'emails': emails
-    }
-    return render(request, 'chatterbox_app/email_inbox.html', context)
+    # Append the new emails to the existing emails
+    all_emails = existing_emails + emails
+
+    # Cache the updated emails for 5 minutes
+    cache.set(cache_key, all_emails, 300)
+    current_page_number = len(all_emails) // 10 + 1
+
+    return redirect(reverse('chatterbox_app:email_inbox') + f'?page={current_page_number - 2}')
