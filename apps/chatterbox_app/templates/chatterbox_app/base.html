@@ -16,6 +16,7 @@
             {% if user.is_authenticated %}
             <a href="{% url 'chatterbox_app:my_account' %}">My Account</a>
             <a href="{% url 'chatterbox_app:contact_list' %}">Contacts</a>
+            <a href="{% url 'chatterbox_app:email_inbox' %}">Emails</a>
             <a href="{% url 'account_logout' %}">Logout</a>
             {% else %}
             <a href="{% url 'account_login' %}">Login</a>
