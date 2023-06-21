@@ -6,14 +6,16 @@
   <h2>Email Inbox</h2>
   {% if page_obj %}
     <ul>
-      {% for email in page_obj %}
-        <li>
-          <strong>From:</strong> {{ email.From }}<br />
-          <strong>Subject:</strong> {{ email.subject|decode_subject }}<br />
-          <strong>Date:</strong> {{ email.Date }}<br />
-          <hr />
-        </li>
-      {% endfor %}
+      {% for uid, email in page_obj %}
+      <li>
+        <strong>From:</strong> {{ email.From }}<br />
+        <strong>Subject:</strong> {{ email.subject|decode_subject }}<br />
+        <strong>Date:</strong> {{ email.Date }}<br />
+        <strong>ID: </strong> {{ uid }}<br />
+        <a href="{% url 'chatterbox_app:email_detail' uid %}">View Email</a>
+        <hr />
+      </li>
+      {% endfor %}    
     </ul>
     {% if page_obj.has_previous %}
       <a href="?page={{ page_obj.previous_page_number }}">Previous</a>

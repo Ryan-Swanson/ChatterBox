@@ -1,0 +1,11 @@
+<!-- templates/chatterbox_app/email_detail.html -->
+{% extends 'chatterbox_app/base.html' %}
+{% load custom_tags %}
+
+{% block content %}
+  <h2>Email Detail</h2>
+  <strong>From:</strong> {{ email.From }}<br />
+  <strong>Subject:</strong> {{ email.subject|decode_subject }}<br />
+  <strong>Date:</strong> {{ email.Date }}<br />
+  <strong>Message:</strong> {{ body|safe }}<br />
+{% endblock %}
