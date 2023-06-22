@@ -1,4 +1,8 @@
 <!-- chatterbox_app/templates/chatterbox_app/base.html -->
+{% load livereload_tags %}
+{% load static %}
+{% load static tailwind_tags %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,6 +10,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChatterBox</title>
+    {% tailwind_css %}
+
 </head>
 
 <body>

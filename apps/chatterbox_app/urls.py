@@ -1,5 +1,7 @@
 # chatterbox_app/urls.py
-from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
+from django.urls import include, path
 from . import views
 from allauth.account.views import LoginView, LogoutView, PasswordChangeView, ConfirmEmailView
 
@@ -20,4 +22,4 @@ urlpatterns = [
     path('contact/<int:pk>/add_note/', views.add_note, name='add_note'),
     path('contact/<int:contact_pk>/note/<int:pk>/edit/', views.note_edit, name='note_edit'),
     path('contact/<int:contact_pk>/note/<int:pk>/delete/', views.note_delete, name='note_delete'),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
