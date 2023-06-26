@@ -63,6 +63,12 @@ def contact_list(request):
 
 @login_required
 def contact_create(request):
+    initial_data = {}
+    if request.method == 'GET':
+        email = request.GET.get('email')
+        if email:
+            initial_data['email'] = email
+
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
@@ -71,7 +77,7 @@ def contact_create(request):
             contact.save()
             return redirect('chatterbox_app:contact_list')
     else:
-        form = ContactForm()
+        form = ContactForm(initial=initial_data)
 
     return render(request, 'chatterbox_app/contact_form.html', {'form': form})
 
@@ -102,8 +108,17 @@ def contact_update(request, pk):
 
 
 @login_required
-def send_email(request, contact_id):
-    contact = get_object_or_404(Contact, id=contact_id, user=request.user)
+def send_email(request, contact_id=None, email_address=None):
+    if contact_id:
+        contact = get_object_or_404(Contact, id=contact_id, user=request.user)
+        recipient_email = contact.email
+    elif email_address:
+        recipient_email = email_address
+        subject = request.GET.get('subject', '')
+        message_id = request.GET.get('message_id', '')
+    else:
+        messages.error(request, 'No recipient specified.')
+        return redirect('chatterbox_app:contact_list')
 
     if request.method == 'POST':
         form = EmailForm(request.POST)
@@ -115,8 +130,9 @@ def send_email(request, contact_id):
 
             msg = MIMEMultipart()
             msg['From'] = smtp_email
-            msg['To'] = contact.email
+            msg['To'] = recipient_email
             msg['Subject'] = subject
+            msg['In-Reply-To'] = message_id  # Set the 'In-Reply-To' header using the message_id variable
             msg.attach(MIMEText(message, 'plain'))
 
             server = smtplib.SMTP('smtp.gmail.com', 587)
@@ -130,15 +146,15 @@ def send_email(request, contact_id):
                 return redirect('chatterbox_app:my_account')
 
             text = msg.as_string()
-            server.sendmail(smtp_email, contact.email, text)
+            server.sendmail(smtp_email, recipient_email, text)
             server.quit()
             return redirect('chatterbox_app:contact_list')
     else:
-        form = EmailForm()
+        form = EmailForm(initial={'subject': subject})
 
     context = {
         'form': form,
-        'contact': contact,
+        'recipient_email': recipient_email,
     }
     return render(request, 'chatterbox_app/email_form.html', context)
 
@@ -295,3 +311,4 @@ def email_detail(request, email_uid):
     }
 
     return render(request, 'chatterbox_app/email_detail.html', context)
+
