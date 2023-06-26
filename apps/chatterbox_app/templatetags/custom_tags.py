@@ -1,5 +1,6 @@
 from django import template
 from email.header import decode_header
+import re
 
 register = template.Library()
 
@@ -31,3 +32,11 @@ def test(value):
 @register.filter(name='get_item')
 def get_item(dictionary, key):
     return dictionary.get(key)
+
+@register.filter(name='parse_email_address')
+def parse_email_address(value):
+    email_regex = r'[\w\.-]+@[\w\.-]+'
+    match = re.search(email_regex, value)
+    if match:
+        return match.group(0)
+    return ''
