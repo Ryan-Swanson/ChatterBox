@@ -1,9 +1,8 @@
-<!-- chatterbox_app/templates/chatterbox_app/home.html -->
 {% extends 'chatterbox_app/base.html' %}
 {% load custom_tags %}
 
 {% block content %}
-    <h2>Welcome to ChatterBox!</h2>
+    <h2 class="text-2xl font-semibold mb-4">Welcome to ChatterBox!</h2>
     {% if user.is_authenticated %}
         <p>Hello, {{ user.first_name|proper_case }}!</p>
     {% else %}

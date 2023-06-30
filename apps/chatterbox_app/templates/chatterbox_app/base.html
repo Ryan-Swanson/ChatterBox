@@ -1,4 +1,3 @@
-<!-- chatterbox_app/templates/chatterbox_app/base.html -->
 {% load livereload_tags %}
 {% load static %}
 {% load static tailwind_tags %}
@@ -11,34 +10,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChatterBox</title>
     {% tailwind_css %}
-
 </head>
 
-<body>
-    <header>
-        <h1>ChatterBox</h1>
-        <nav>
-            <a href="{% url 'chatterbox_app:home' %}">Home</a>
-            {% if user.is_authenticated %}
-            <a href="{% url 'chatterbox_app:my_account' %}">My Account</a>
-            <a href="{% url 'chatterbox_app:contact_list' %}">Contacts</a>
-            <a href="{% url 'chatterbox_app:email_inbox' %}">Emails</a>
-            <a href="{% url 'account_logout' %}">Logout</a>
-            {% else %}
-            <a href="{% url 'account_login' %}">Login</a>
-            <a href="{% url 'account_signup' %}">Sign Up</a>
-            {% endif %}
-        </nav>
-    {% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-
+<body class="bg-gray-100">
+    <header class="bg-blue-500 text-white py-4">
+        <div class="container mx-auto">
+            <h1 class="text-2xl font-bold mb-2">ChatterBox</h1>
+            <nav class="space-x-4">
+                <a class="hover:text-blue-300" href="{% url 'chatterbox_app:home' %}">Home</a>
+                {% if user.is_authenticated %}
+                <a class="hover:text-blue-300" href="{% url 'chatterbox_app:my_account' %}">My Account</a>
+                <a class="hover:text-blue-300" href="{% url 'chatterbox_app:contact_list' %}">Contacts</a>
+                <a class="hover:text-blue-300" href="{% url 'chatterbox_app:email_inbox' %}">Emails</a>
+                <a class="hover:text-blue-300" href="{% url 'account_logout' %}">Logout</a>
+                {% else %}
+                <a class="hover:text-blue-300" href="{% url 'account_login' %}">Login</a>
+                <a class="hover:text-blue-300" href="{% url 'account_signup' %}">Sign Up</a>
+                {% endif %}
+            </nav>
+        </div>
+        {% if messages %}
+        <ul class="messages container mx-auto mt-4">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
     </header>
-    <main>
+    <main class="container mx-auto mt-8">
         {% block content %}
         {% endblock %}
     </main>
