@@ -1,30 +1,54 @@
-<!-- templates/chatterbox_app/email_inbox.html -->
 {% extends 'chatterbox_app/base.html' %}
 {% load custom_tags %}
 
 {% block content %}
-  <h2>Email Inbox</h2>
+  <h2 class="text-2xl font-semibold mb-4">Email Inbox</h2>
+  <div class="mt-4">
+    {% if page_obj.has_previous %}
+      <a class="text-blue-500 hover:text-blue-700" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+    {% endif %}
+    {% if page_obj.has_next %}
+      <a class="text-blue-500 hover:text-blue-700" href="?page={{ page_obj.next_page_number }}">Next</a>
+    {% else %}
+      <a class="text-blue-500 hover:text-blue-700" href="{% url 'chatterbox_app:load_emails' %}">Load More</a>
+    {% endif %}
+  </div>
   {% if page_obj %}
-    <ul>
+    <ul class="space-y-4">
       {% for uid, email in page_obj %}
-      <li>
-        <strong>From:</strong> {{ email.From }}<br />
-        <strong>Subject:</strong> {{ email.subject|decode_subject }}<br />
-        <strong>Date:</strong> {{ email.Date }}<br />
-        <strong>ID: </strong> {{ uid }}<br />
-        <a href="{% url 'chatterbox_app:email_detail' uid %}">View Email</a>
+      <li class="bg-white p-4 rounded shadow hover:bg-gray-100 transition duration-300">
+        <a class="grid grid-cols-3 gap-4 items-center justify-between" href="{% url 'chatterbox_app:email_detail' uid %}" role="listitem" aria-label="View Email">
+          <div class="col-span-2 grid grid-cols-3 gap-4">
+            <span class="col-span-1"><strong>From:</strong> {{ email.From }}</span>
+            <span class="col-span-1"><strong>Subject:</strong> {{ email.subject|decode_subject }}</span>
+            <span class="col-span-1"><strong>Date:</strong> {{ email.Date }}</span>
+          </div>
+          <span class="text-blue-500 hover:text-blue-700 col-span-1 text-right" tabindex="-1">View Email</span>
+          <span class="text-blue-500 hover:text-blue-700 col-span-1 text-right" tabindex="-2">         
+            <a class="text-blue-500 hover:text-blue-700" href="{% url 'chatterbox_app:send_email_address' email_address=email.From|parse_email_address %}?subject={{ email.subject|decode_subject|urlencode }}">Reply</a>             
+          </span>
+          <span class="text-blue-500 hover:text-blue-700 col-span-1 text-right" tabindex="-3">             
+            <a class="text-blue-500 hover:text-blue-700" href="{% url 'chatterbox_app:contact_create' %}?email={{ email.From|parse_email_address }}">Add Contact</a>
+          </span>
+
+        </a>
+        <div class="mt-2 flex flex-col">
+          
+        </div>
         <hr />
       </li>
       {% endfor %}    
     </ul>
-    {% if page_obj.has_previous %}
-      <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
-    {% endif %}
-    {% if page_obj.has_next %}
-      <a href="?page={{ page_obj.next_page_number }}">Next</a>
-    {% else %}
-      <a href="{% url 'chatterbox_app:load_emails' %}">Load More</a>
-    {% endif %}
+    <div class="mb-4">
+        {% if page_obj.has_previous %}
+          <a class="text-blue-500 hover:text-blue-700" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+        {% if page_obj.has_next %}
+          <a class="text-blue-500 hover:text-blue-700" href="?page={{ page_obj.next_page_number }}">Next</a>
+        {% else %}
+          <a class="text-blue-500 hover:text-blue-700" href="{% url 'chatterbox_app:load_emails' %}">Load More</a>
+        {% endif %}
+    </div>
   {% else %}
     <p>No emails found.</p>
   {% endif %}

@@ -1,11 +1,16 @@
-<!-- templates/chatterbox_app/email_detail.html -->
 {% extends 'chatterbox_app/base.html' %}
 {% load custom_tags %}
 
 {% block content %}
-  <h2>Email Detail</h2>
-  <strong>From:</strong> {{ email.From }}<br />
-  <strong>Subject:</strong> {{ email.subject|decode_subject }}<br />
-  <strong>Date:</strong> {{ email.Date }}<br />
-  <strong>Message:</strong> {{ body|safe }}<br />
+  <h2 class="text-black text-2xl font-semibold mb-4">Email Detail</h2>
+  <div class="text-black bg-white p-4 rounded shadow">
+    <strong>From:</strong> {{ email.From }}<br />
+    <strong>Subject:</strong> {{ email.subject|decode_subject }}<br />
+    <strong>Date:</strong> {{ email.Date }}<br />
+    <strong>Message:</strong> {{ body|safe }}<br />
+  </div>
+  <div class="mt-4">
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 inline-block" href="{% url 'chatterbox_app:send_email_address' email_address=email.From|parse_email_address %}?subject={{ email.subject|decode_subject|urlencode }}">Reply</a>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 ml-2 inline-block" href="{% url 'chatterbox_app:contact_create' %}?email={{ email.From|parse_email_address }}">Add Contact</a>
+  </div>
 {% endblock %}
