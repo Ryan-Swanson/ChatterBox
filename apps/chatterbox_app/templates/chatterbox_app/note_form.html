@@ -1,11 +1,10 @@
-<!-- templates/chatterbox_app/note_form.html -->
 {% extends "chatterbox_app/base.html" %}
 
 {% block content %}
-  <h2>Edit note</h2>
-  <form method="POST">
+  <h2 class="text-2xl font-semibold mb-4">Edit note</h2>
+  <form method="POST" class="bg-white p-4 rounded shadow">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Save note</button>
+    <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700" type="submit">Save note</button>
   </form>
 {% endblock %}

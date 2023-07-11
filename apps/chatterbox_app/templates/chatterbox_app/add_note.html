@@ -4,7 +4,9 @@
   <h2>Add a note</h2>
   <form method="POST">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Add note</button>
+    <div class="flex flex-col mb-4">
+      {{ form.as_p }}
+    </div>
+    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">Add note</button>
   </form>
 {% endblock %}

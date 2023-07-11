@@ -1,26 +1,27 @@
-<!-- templates/chatterbox_app/contact_detail.html -->
-
 {% extends "chatterbox_app/base.html" %}
 
 {% block content %}
-  <h2>Contact: {{ object.first_name }} {{ object.last_name }}</h2>
-  <p>Email: {{ object.email }}</p>
-  <p>Phone: {{ object.phone }}</p>
+  <h2 class="text-2xl font-semibold mb-4">Contact: {{ object.first_name }} {{ object.last_name }}</h2>
+  <div class="bg-white p-4 rounded shadow">
+    <p>Email: {{ object.email }}</p>
+    <p>Phone: {{ object.phone }}</p>
+  </div>
 
-  <h3>Notes:</h3>
-  <ul>
+  <h3 class="text-xl font-semibold mt-8 mb-4">Notes:</h3>
+  <ul class="space-y-4">
     {% for note in notes %}
-    <li>
+    <li class="bg-white p-4 rounded shadow">
       <p>Date: {{ note.date }} | Created: {{ note.created_at }} | Last updated: {{ note.updated_at }}</p>
       <p>Note: {{ note.note_content }}</p>
-      <a href="{% url 'chatterbox_app:note_edit' contact_pk=object.pk pk=note.pk %}">Edit</a>
-      <a href="{% url 'chatterbox_app:note_delete' contact_pk=object.pk pk=note.pk %}">Delete</a>
+      <a class="text-blue-500 hover:text-blue-700" href="{% url 'chatterbox_app:note_edit' contact_pk=object.pk pk=note.pk %}">Edit</a>
+      <a class="text-blue-500 hover:text-blue-700" href="{% url 'chatterbox_app:note_delete' contact_pk=object.pk pk=note.pk %}">Delete</a>
     </li>
     {% empty %}
     <li>No notes yet.</li>
     {% endfor %}
   </ul>
-  <a href="{% url 'chatterbox_app:contact_delete' pk=object.pk %}">Delete Contact</a>
-  <a href="{% url 'chatterbox_app:add_note' pk=object.pk %}">Add Note</a>
-
+  <div class="mt-4">
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 inline-block" href="{% url 'chatterbox_app:contact_delete' pk=object.pk %}">Delete Contact</a>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 ml-2 inline-block" href="{% url 'chatterbox_app:add_note' pk=object.pk %}">Add Note</a>
+  </div>
 {% endblock %}

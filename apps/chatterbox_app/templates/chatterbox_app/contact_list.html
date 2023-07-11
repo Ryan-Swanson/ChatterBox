@@ -1,33 +1,36 @@
-<!-- templates/chatterbox_app/contact_list.html -->
-
 {% extends "chatterbox_app/base.html" %}
 
 {% block content %}
-<h2>Contact List</h2>
-<a href="{% url 'chatterbox_app:contact_create' %}">Add Contact</a>  <!-- Add this line -->
+<h2 class="text-2xl font-semibold mb-4">Contact List</h2>
+<a class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-700 mb-4 inline-block" href="{% url 'chatterbox_app:contact_create' %}">Add Contact</a>
 {% if contacts %}
-<table>
-  <tr>
-    <th>Name</th>
-    <th>Email</th>
-    <th>Actions</th>
-  </tr>
-  {% for contact in contacts %}
-  <tr>
-    <td>{{ contact.first_name }} {{ contact.last_name }}</td>
-    <td>{{ contact.email }}</td>
-    <td>
-      <a href="{% url 'chatterbox_app:contact_detail' pk=contact.pk %}">View</a> |
-      <a href="{% url 'chatterbox_app:contact_update' pk=contact.pk %}">Edit</a> |
-      <a href="{% url 'chatterbox_app:add_note' pk=contact.pk %}">Add Note</a> |
-      <a href="{% url 'chatterbox_app:send_email' contact.id %}">Send Email</a> |
-      <a href="{% url 'chatterbox_app:contact_delete' pk=contact.pk %}">Delete</a>
+<table class="table-auto w-full">
+  <thead>
+    <tr>
+      <th class="border px-4 py-2">Name</th>
+      <th class="border px-4 py-2">Email</th>
+      <th class="border px-4 py-2">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for contact in contacts %}
+    <tr>
+      <td class="border px-4 py-2 text-center">{{ contact.first_name }} {{ contact.last_name }}</td>
+      <td class="border px-4 py-2 text-center">{{ contact.email }}</td>
+      <td class="border px-4 py-2 text-center">
+        <a class="text-blue-500 hover:text-blue-700" href="{% url 'chatterbox_app:contact_detail' pk=contact.pk %}">View</a> |
+        <a class="text-blue-500 hover:text-blue-700" href="{% url 'chatterbox_app:contact_update' pk=contact.pk %}">Edit</a> |
+        <a class="text-blue-500 hover:text-blue-700" href="{% url 'chatterbox_app:add_note' pk=contact.pk %}">Add Note</a> |
+        <a class="text-blue-500 hover:text-blue-700" href="{% url 'chatterbox_app:send_email' contact.id %}">Send Email</a> |
+        <a class="text-blue-500 hover:text-blue-700" href="{% url 'chatterbox_app:contact_delete' pk=contact.pk %}">Delete</a>
     </td>
-  </tr>
-  {% endfor %}
+    
+    </tr>
+    {% endfor %}
+  </tbody>
 </table>
 {% else %}
 <p>No contacts yet.</p>
 {% endif %}
-<a href="{% url 'chatterbox_app:contact_create' %}">Add Contact</a>  <!-- Or add it here -->
+<a class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-700 mt-4 inline-block" href="{% url 'chatterbox_app:contact_create' %}">Add Contact</a>
 {% endblock %}
